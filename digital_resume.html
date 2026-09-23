@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Resume | Professional Portfolio</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0b0f0e',
+                        cardBg: '#111816',
+                        cardHover: '#16221f',
+                        sage: {
+                            DEFAULT: '#22c55e',
+                            muted: '#4ade80',
+                            dark: '#16a34a',
+                            light: '#86efac'
+                        },
+                        accentGreen: '#10b981'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts Inter & Fira Code -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0f0e;
+            color: #e5e7eb;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0f0e;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1b3026;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #22c55e;
+        }
+        .glass-card {
+            background: rgba(17, 24, 22, 0.75);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(34, 197, 94, 0.12);
+        }
+        .glass-nav {
+            background: rgba(11, 15, 14, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(34, 197, 94, 0.15);
+        }
+        /* Matrix Canvas Background */
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.22;
+        }
+    </style>
+</head>
+<body class="bg-darkBg text-gray-100 antialiased selection:bg-emerald-500 selection:text-white relative">
+
+    <!-- Matrix Code Rain Canvas Background -->
+    <canvas id="matrix-canvas"></canvas>
+
+    <!-- Navigation Bar -->
+    <header class="fixed top-0 left-0 right-0 z-50 glass-nav transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 sm:h-20">
+                <!-- Brand / Logo with Picture Avatar -->
+                <a href="#home" class="flex items-center gap-2.5 group">
+                    <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-emerald-500/60 shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform bg-slate-900">
+                        <img src="luya.png" alt="Profile Logo Avatar" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/150x150/111816/10b981?text=Me'">
+                    </div>
+                    <span class="font-semibold text-lg tracking-tight text-white">Portfolio<span class="text-emerald-400">.</span></span>
+                </a>
+
+                <!-- Desktop Navigation Links -->
+                <nav class="hidden md:flex items-center gap-1 lg:gap-2 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full">
+                    <a href="#home" class="nav-link px-4 py-2 rounded-full text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 transition-all active">Home</a>
+                    <a href="#about" class="nav-link px-4 py-2 rounded-full text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 transition-all">About Me</a>
+                    <a href="#projects" class="nav-link px-4 py-2 rounded-full text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 transition-all">My Projects</a>
+                    <a href="#contact" class="nav-link px-4 py-2 rounded-full text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 transition-all">Contact Me</a>
+                </nav>
+
+                <!-- Action Button & Mobile Menu Toggle -->
+                <div class="flex items-center gap-3">
+                    <a href="#contact" class="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-darkBg font-semibold text-sm transition-all shadow-lg shadow-emerald-500/20 hover:scale-[1.02] active:scale-[0.98]">
+                        <i class="fa-solid fa-paper-plane text-xs"></i><span>Let's Talk</span>
+                    </a>
+                    
+                    <!-- Mobile Hamburger Button -->
+                    <button id="menu-btn" class="md:hidden p-2.5 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 focus:outline-none transition-colors" aria-label="Toggle Menu">
+                        <i class="fa-solid fa-bars text-lg" id="menu-icon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden glass-card border-t border-emerald-500/20 px-4 pt-3 pb-5 space-y-2 animate-fadeIn">
+            <a href="#home" class="mobile-link block px-4 py-3 rounded-xl text-base font-medium text-gray-200 hover:bg-white/10 transition-colors">Home</a>
+            <a href="#about" class="mobile-link block px-4 py-3 rounded-xl text-base font-medium text-gray-200 hover:bg-white/10 transition-colors">About Me</a>
+            <a href="#projects" class="mobile-link block px-4 py-3 rounded-xl text-base font-medium text-gray-200 hover:bg-white/10 transition-colors">My Projects</a>
+            <a href="#contact" class="mobile-link block px-4 py-3 rounded-xl text-base font-medium text-emerald-400 hover:bg-white/10 transition-colors">Contact Me</a>
+        </div>
+    </header>
+
+    <main class="relative z-10 pt-20">
+
+        <!-- SECTION 1: HOME -->
+        <section id="home" class="min-h-[90vh] flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8">
+            <div class="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                
+                <!-- Hero Left Content -->
+                <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                    <!-- Status Badge -->
+                    <div class="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs sm:text-sm font-medium">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        Open to Opportunities & Collaborations
+                    </div>
+
+                    <!-- Main Headline -->
+                    <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-tight">
+                        Rosyidah Tahir <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">Information Technology Undergraduate </span>
+                    </h1>
+
+                    <!-- Brief Bio -->
+                    <p class="text-lg text-gray-300 max-w-2xl mx-auto lg:mx-0 font-normal leading-relaxed">
+                        I'm a passionate IT Professional, Web Developer, and Multimedia Specialist dedicated to building high-impact systems, responsive applications, and intuitive user experiences.
+                    </p>
+
+                    <!-- Call To Action Buttons -->
+                    <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
+                        <a href="#projects" class="px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-darkBg font-semibold text-sm sm:text-base transition-all shadow-lg shadow-emerald-500/25 flex items-center gap-2 hover:translate-y-[-2px]">
+                            <span>Explore Projects</span>
+                            <i class="fa-solid fa-arrow-down text-xs"></i>
+                        </a>
+                        <a href="#contact" class="px-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold text-sm sm:text-base transition-all flex items-center gap-2 hover:translate-y-[-2px]">
+                            <span>Get in Touch</span>
+                            <i class="fa-solid fa-envelope text-xs text-emerald-400"></i>
+                        </a>
+                    </div>
+
+                    <!-- Quick Metrics / Highlights -->
+                    <div class="grid grid-cols-3 gap-4 pt-6 border-t border-white/10 max-w-lg mx-auto lg:mx-0">
+                        <div>
+                            <div class="text-2xl font-bold text-white">3+</div>
+                            <div class="text-xs text-gray-400 mt-0.5">Key Projects</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold text-white">Full Stack</div>
+                            <div class="text-xs text-gray-400 mt-0.5">Development</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold text-white">IT & Media</div>
+                            <div class="text-xs text-gray-400 mt-0.5">Specialization</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hero Right Profile Photo & Card Preview -->
+                <div class="lg:col-span-5 flex justify-center">
+                    <div class="relative w-full max-w-sm">
+                        <!-- Glow effect backdrop -->
+                        <div class="absolute -inset-2 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-[2.5rem] blur-xl opacity-30 animate-pulse"></div>
+                        
+                        <!-- Profile Card with Photo -->
+                        <div class="relative glass-card rounded-[2rem] p-6 space-y-6 shadow-2xl text-center">
+                            <div class="relative mx-auto w-48 h-48 rounded-2xl overflow-hidden border-2 border-emerald-500/50 shadow-xl bg-slate-900 group">
+                                <img src="luya.png" alt="Professional Profile Photo" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/400x400/111816/10b981?text=Developer'">
+                                <div class="absolute inset-0 bg-gradient-to-t from-darkBg/60 via-transparent to-transparent opacity-40"></div>
+                            </div>
+
+                            <div class="space-y-1">
+                                <h3 class="text-xl font-bold text-white">Rosyidah Tahir</h3>
+                                <p class="text-xs text-emerald-400 font-medium">University Malaysia Sabah, Labuan International Campus</p>
+                            </div>
+
+                            <div class="flex flex-wrap justify-center gap-1.5 pt-1">
+                                <span class="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-[11px] text-emerald-300">PHP / MySQL</span>
+                                <span class="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-[11px] text-emerald-300">Leaflet & APIs</span>
+                                <span class="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-[11px] text-emerald-300">Java & OOP</span>
+                            </div>
+
+                            <div class="pt-4 border-t border-white/10 flex items-center justify-between text-xs text-gray-400">
+                                <div class="flex items-center gap-1.5">
+                                    <i class="fa-solid fa-check-circle text-emerald-400"></i>
+                                    <span>Verified Portfolio</span>
+                                </div>
+                                <a href="#about" class="text-emerald-400 hover:underline font-medium">Read Bio &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION 2: ABOUT ME -->
+        <section id="about" class="py-24 px-4 sm:px-6 lg:px-8 border-t border-emerald-500/10 bg-darkBg/80">
+            <div class="max-w-6xl mx-auto">
+                
+                <!-- Section Header -->
+                <div class="text-center max-w-3xl mx-auto mb-16 space-y-3">
+                    <span class="text-emerald-400 text-xs sm:text-sm font-semibold tracking-widest uppercase bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">Get to Know Me</span>
+                    <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white">About Me</h2>
+                    <p class="text-gray-400 text-base sm:text-lg">Bridging technology, multimedia design, and structured administration.</p>
+                </div>
+
+                <!-- Bento Grid Layout -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    
+                    <!-- Main Summary Card -->
+                    <div class="md:col-span-2 glass-card rounded-3xl p-6 sm:p-8 space-y-6 flex flex-col justify-between">
+                        <div class="space-y-4">
+                            <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-xl">
+                                <i class="fa-solid fa-user-gear"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-white">Professional Background</h3>
+                            <p class="text-gray-300 leading-relaxed font-normal text-sm sm:text-base">
+                                I am an adaptable and detail-oriented IT professional with a diverse background spanning full-stack web development, multimedia production, and efficient system administration. My passion lies in solving real-world challenges through technology—transforming complex requirements into clean, user-centric, and robust applications.
+                            </p>
+                            <p class="text-gray-400 leading-relaxed font-normal text-sm sm:text-base">
+                                Whether developing community early-warning systems, laboratory reservation workflows, or corporate Dashboard for data analytics, I focus on clean code, seamless API integrations, and reliable data management.
+                            </p>
+                        </div>
+
+                        <div class="pt-6 border-t border-white/10 flex flex-wrap gap-4 text-sm text-gray-300">
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-graduation-cap text-emerald-400"></i>
+                                <span>BSc (Hons) Information Technology</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-location-dot text-emerald-400"></i>
+                                <span>University Malaysia Sabah, Labuan International Campus</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Core Competencies Card -->
+                    <div class="glass-card rounded-3xl p-6 sm:p-8 space-y-6">
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-xl">
+                            <i class="fa-solid fa-cubes"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white">Core Pillars</h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between text-xs font-semibold text-gray-300 mb-1">
+                                    <span>Web Development</span>
+                                    <span class="text-emerald-400">90%</span>
+                                </div>
+                                <div class="w-full bg-white/5 rounded-full h-2 overflow-hidden">
+                                    <div class="bg-gradient-to-r from-emerald-500 to-green-400 h-2 rounded-full" style="width: 90%"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs font-semibold text-gray-300 mb-1">
+                                    <span>Multimedia & Design</span>
+                                    <span class="text-emerald-400">85%</span>
+                                </div>
+                                <div class="w-full bg-white/5 rounded-full h-2 overflow-hidden">
+                                    <div class="bg-gradient-to-r from-emerald-500 to-green-400 h-2 rounded-full" style="width: 85%"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs font-semibold text-gray-300 mb-1">
+                                    <span>Database & Backend</span>
+                                    <span class="text-emerald-400">88%</span>
+                                </div>
+                                <div class="w-full bg-white/5 rounded-full h-2 overflow-hidden">
+                                    <div class="bg-gradient-to-r from-emerald-500 to-green-400 h-2 rounded-full" style="width: 88%"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs font-semibold text-gray-300 mb-1">
+                                    <span>System Administration</span>
+                                    <span class="text-emerald-400">82%</span>
+                                </div>
+                                <div class="w-full bg-white/5 rounded-full h-2 overflow-hidden">
+                                    <div class="bg-gradient-to-r from-emerald-500 to-green-400 h-2 rounded-full" style="width: 82%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tech Stack Badges Card -->
+                    <div class="md:col-span-3 glass-card rounded-3xl p-6 sm:p-8 space-y-6">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                                <i class="fa-solid fa-layer-group"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-white">Technical Arsenal & Tools</h3>
+                        </div>
+
+                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+                            <div class="p-4 rounded-2xl bg-white/5 border border-white/10 text-center hover:bg-white/10 transition-colors">
+                                <i class="fa-brands fa-php text-2xl text-emerald-400 mb-2"></i>
+                                <div class="text-sm font-semibold text-white">PHP / MySQL</div>
+                                <div class="text-xs text-gray-400 mt-0.5">Backend & DB</div>
+                            </div>
+                            <div class="p-4 rounded-2xl bg-white/5 border border-white/10 text-center hover:bg-white/10 transition-colors">
+                                <i class="fa-brands fa-java text-2xl text-emerald-400 mb-2"></i>
+                                <div class="text-sm font-semibold text-white">Java & OOP</div>
+                                <div class="text-xs text-gray-400 mt-0.5">Desktop & Swing</div>
+                            </div>
+                            <div class="p-4 rounded-2xl bg-white/5 border border-white/10 text-center hover:bg-white/10 transition-colors">
+                                <i class="fa-brands fa-js text-2xl text-emerald-400 mb-2"></i>
+                                <div class="text-sm font-semibold text-white">JavaScript</div>
+                                <div class="text-xs text-gray-400 mt-0.5">Frontend Logic</div>
+                            </div>
+                            <div class="p-4 rounded-2xl bg-white/5 border border-white/10 text-center hover:bg-white/10 transition-colors">
+                                <i class="fa-solid fa-map-location-dot text-2xl text-emerald-400 mb-2"></i>
+                                <div class="text-sm font-semibold text-white">Leaflet & APIs</div>
+                                <div class="text-xs text-gray-400 mt-0.5">Mapping & Data</div>
+                            </div>
+                            <div class="p-4 rounded-2xl bg-white/5 border border-white/10 text-center hover:bg-white/10 transition-colors">
+                                <i class="fa-solid fa-paintbrush text-2xl text-emerald-400 mb-2"></i>
+                                <div class="text-sm font-semibold text-white">Tailwind CSS</div>
+                                <div class="text-xs text-gray-400 mt-0.5">Modern UI / UX</div>
+                            </div>
+                            <div class="p-4 rounded-2xl bg-white/5 border border-white/10 text-center hover:bg-white/10 transition-colors">
+                                <i class="fa-solid fa-server text-2xl text-emerald-400 mb-2"></i>
+                                <div class="text-sm font-semibold text-white">Admin Tools</div>
+                                <div class="text-xs text-gray-400 mt-0.5">IT Dashboards</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION 3: MY PROJECTS -->
+        <section id="projects" class="py-24 px-4 sm:px-6 lg:px-8 border-t border-emerald-500/10">
+            <div class="max-w-6xl mx-auto">
+                
+                <!-- Section Header -->
+                <div class="text-center max-w-3xl mx-auto mb-16 space-y-3">
+                    <span class="text-emerald-400 text-xs sm:text-sm font-semibold tracking-widest uppercase bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">Portfolio Showcase</span>
+                    <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white">My Projects & Visual Previews</h2>
+                    <p class="text-gray-400 text-base sm:text-lg">Explore key systems I've engineered with preview screenshots and specific skill tags.</p>
+                </div>
+
+                <!-- Projects Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    
+                    <!-- PROJECT 1: Landslide Early Warning System -->
+                    <div class="glass-card rounded-3xl overflow-hidden flex flex-col justify-between hover:border-emerald-500/40 transition-all duration-300 group">
+                        <!-- Project Image Preview -->
+                        <div class="relative overflow-hidden h-48 bg-slate-900 border-b border-white/10">
+                            <img src="landslide.png" alt="Ranau Landslide System" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/600x400/111816/10b981?text=Ranau+Preview'">
+                            <div class="absolute inset-0 bg-gradient-to-t from-darkBg/90 via-transparent to-transparent opacity-60"></div>
+                            <button onclick="openLightbox('landslide.png', 'Landslide Early Warning System for Ranau Community', 'Ranau Leaflet Map & API Integration Module.')" class="absolute bottom-3 right-3 px-2.5 py-1.5 rounded-xl bg-darkBg/85 backdrop-blur-md text-[11px] font-semibold text-emerald-400 border border-white/10 hover:bg-emerald-500 hover:text-darkBg transition-all flex items-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-expand text-[10px]"></i>
+                                <span>Zoom Preview</span>
+                            </button>
+                            <span class="absolute top-3 left-3 px-3 py-1 rounded-full bg-emerald-500/10 backdrop-blur-md text-emerald-400 text-xs font-semibold border border-emerald-500/20">Project 01</span>
+                        </div>
+
+                        <div class="p-6 sm:p-8 space-y-5 flex-1 flex flex-col justify-between">
+                            <div class="space-y-4">
+                                <h3 class="text-xl font-bold text-white leading-snug">
+                                    Landslide Early Warning & Emergency Response System for Ranau Community
+                                </h3>
+
+                                <p class="text-gray-300 text-sm leading-relaxed">
+                                    A community-focused disaster mitigation platform designed to monitor environmental sensor data, trigger timely alerts, and visualize vulnerable zones on interactive maps.
+                                </p>
+
+                                <!-- Skill Tags -->
+                                <div class="space-y-2 pt-2">
+                                    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Technologies Used:</div>
+                                    <div class="flex flex-wrap gap-1.5">
+                                        <span class="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs font-medium text-emerald-300">MySQL</span>
+                                        <span class="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs font-medium text-emerald-300">API Integration</span>
+                                        <span class="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs font-medium text-emerald-300">Leaflet</span>
+                                        <span class="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs font-medium text-emerald-300">JSON</span>
+                                        <span class="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs font-medium text-emerald-300">PHP</span>
+                                        <span class="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs font-medium text-emerald-300">HTML/CSS</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pt-6 mt-6 border-t border-white/10 flex items-center justify-between text-xs">
+                                <span class="text-gray-400">Univesity Malaysia Sabah , Labuan International Campus</span>
+                                <button onclick="openProjectModal('Landslide Early Warning & Emergency Response System for Ranau Community', 'Designed specifically for the Ranau community to mitigate landslide risks. Features real-time sensor ingestion via JSON APIs, spatial mapping through Leaflet.js, and a robust backend powered by PHP and MySQL.', ['MySQL', 'API Integration', 'Leaflet', 'JSON', 'PHP', 'HTML/CSS'])" class="text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1 group-hover:translate-x-1 transition-transform cursor-pointer">
+                                    <span>Details</span>
+                                    <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PROJECT 2: Lab Reservation System -->
+                    <div class="glass-card rounded-3xl overflow-hidden flex flex-col justify-between hover:border-emerald-500/40 transition-all duration-300 group">
+                        <!-- Project Image Preview -->
+                        <div class="relative overflow-hidden h-48 bg-slate-900 border-b border-white/10">
+                            <img src="ecatering.jpg" alt="E-Catering System" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/600x400/111816/0d9488?text=E-Catering+Preview'">
+                            <div class="absolute inset-0 bg-gradient-to-t from-darkBg/90 via-transparent to-transparent opacity-60"></div>
+                            <button onclick="openLightbox('ecatering.jpg', 'E-Catering System', 'A web-based e-Katering system designed to streamline catering requests, approval workflows, participant management, and coordination between Urusetia and the Unit Perolehan.')" class="absolute bottom-3 right-3 px-2.5 py-1.5 rounded-xl bg-darkBg/85 backdrop-blur-md text-[11px] font-semibold text-emerald-400 border border-white/10 hover:bg-emerald-500 hover:text-darkBg transition-all flex items-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-expand text-[10px]"></i>
+                                <span>Zoom Preview</span>
+                            </button>
+                            <span class="absolute top-3 left-3 px-3 py-1 rounded-full bg-emerald-500/10 backdrop-blur-md text-emerald-400 text-xs font-semibold border border-emerald-500/20">Project 02</span>
+                        </div>
+
+                        <div class="p-6 sm:p-8 space-y-5 flex-1 flex flex-col justify-between">
+                            <div class="space-y-4">
+                                <h3 class="text-xl font-bold text-white leading-snug">
+                                    E-Catering System 
+                                </h3>
+
+                                <p class="text-gray-300 text-sm leading-relaxed">
+                                  A web-based e-Katering system designed to streamline catering requests, approval workflows, participant management, and coordination between Urusetia and the Unit Perolehan.
+                                </p>
+
+                                <!-- Skill Tags -->
+                                <div class="space-y-2 pt-2">
+                                    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Technologies Used:</div>
+                                    <div class="flex flex-wrap gap-1.5">
+                                        <span class="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs font-medium text-emerald-300">HTML/CSS</span>
+                                        <span class="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs font-medium text-emerald-300">PHP</span>
+                                        <span class="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs font-medium text-emerald-300">GUI</span>
+                                        <span class="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs font-medium text-emerald-300">JSON</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pt-6 mt-6 border-t border-white/10 flex items-center justify-between text-xs">
+                                <span class="text-gray-400">Sabah Economic Development and Investment Authority</span>
+                                <button onclick="openProjectModal('E-Catering System', 'A web-based e-Katering system designed to streamline catering requests, approval workflows, participant management, and coordination between Urusetia and the Unit Perolehan.', ['HTML/CSS', 'PHP', 'GUI', 'JSON'])" class="text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1 group-hover:translate-x-1 transition-transform cursor-pointer">
+                                    <span>Details</span>
+                                    <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PROJECT 3: Corporate IT & Multimedia Dashboard -->
+                    <div class="glass-card rounded-3xl overflow-hidden flex flex-col justify-between hover:border-emerald-500/40 transition-all duration-300 group">
+                        <!-- Project Image Preview -->
+                        <div class="relative overflow-hidden h-48 bg-slate-900 border-b border-white/10">
+                            <img src="dashboard.png" alt="Corporate Dashboard" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/600x400/111816/047857?text=Dashboard+Preview'">
+                            <div class="absolute inset-0 bg-gradient-to-t from-darkBg/90 via-transparent to-transparent opacity-60"></div>
+                            <button onclick="openLightbox('dashboard.png', 'Corporate IT & Multimedia Dashboard', '& DAZ Analytics Dashboard Interface.')" class="absolute bottom-3 right-3 px-2.5 py-1.5 rounded-xl bg-darkBg/85 backdrop-blur-md text-[11px] font-semibold text-emerald-400 border border-white/10 hover:bg-emerald-500 hover:text-darkBg transition-all flex items-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-expand text-[10px]"></i>
+                                <span>Zoom Preview</span>
+                            </button>
+                            <span class="absolute top-3 left-3 px-3 py-1 rounded-full bg-emerald-500/10 backdrop-blur-md text-emerald-400 text-xs font-semibold border border-emerald-500/20">Project 03</span>
+                        </div>
+
+                        <div class="p-6 sm:p-8 space-y-5 flex-1 flex flex-col justify-between">
+                            <div class="space-y-4">
+                                <h3 class="text-xl font-bold text-white leading-snug">
+                                    Human Resource Dashboard 
+                                </h3>
+
+                                <p class="text-gray-300 text-sm leading-relaxed">
+                                    A centralized enterprise administration tool providing real-time system monitoring and staff information management .  
+                                </p>
+
+                                <!-- Skill Tags -->
+                                <div class="space-y-2 pt-2">
+                                    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Technologies Used:</div>
+                                    <div class="flex flex-wrap gap-1.5">
+                                        <span class="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs font-medium text-emerald-300">Data Cleaning</span>
+                                        <span class="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs font-medium text-emerald-300">Data Visualization</span>
+                                        <span class="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs font-medium text-emerald-300">DAX</span>
+                                        <span class="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs font-medium text-emerald-300">Data Analytics</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pt-6 mt-6 border-t border-white/10 flex items-center justify-between text-xs">
+                                <span class="text-gray-400">Sabah Economic Development and Investment Authority</span>
+                                <button onclick="openProjectModal('Human Resource Dashboard', 'A centralized enterprise administration tool providing real-time system monitoring and staff information management .', ['Data Cleaning', 'Data Visualization', 'DAX', 'Data Analytics'])" class="text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1 group-hover:translate-x-1 transition-transform cursor-pointer">
+                                    <span>Details</span>
+                                    <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION 4: CONTACT ME -->
+        <section id="contact" class="py-24 px-4 sm:px-6 lg:px-8 border-t border-emerald-500/10 bg-darkBg/80">
+            <div class="max-w-6xl mx-auto">
+                
+                <!-- Section Header -->
+                <div class="text-center max-w-3xl mx-auto mb-16 space-y-3">
+                    <span class="text-emerald-400 text-xs sm:text-sm font-semibold tracking-widest uppercase bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">Let's Connect</span>
+                    <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white">Contact Me</h2>
+                    <p class="text-gray-400 text-base sm:text-lg">Have a project in mind, a job opportunity, or want to collaborate? Reach out below.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    
+                    <!-- Contact Info Cards -->
+                    <div class="lg:col-span-5 space-y-4">
+                        <div class="glass-card rounded-3xl p-6 sm:p-8 space-y-6">
+                            <h3 class="text-xl font-bold text-white">Get in Touch</h3>
+                            <p class="text-gray-300 text-sm leading-relaxed">
+                                I'm currently available for full-time roles, freelance projects, and technical consultations. Drop me a message and I'll get back to you promptly.
+                            </p>
+
+                            <div class="space-y-4 pt-2">
+                                <div class="flex items-center gap-4 p-3.5 rounded-2xl bg-white/5 border border-white/10">
+                                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+                                        <i class="fa-solid fa-envelope"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-xs text-gray-400">Email Me</div>
+                                        <a href="mailto:contact@example.com" class="text-sm font-semibold text-white hover:text-emerald-400 transition-colors">rosluya@gmail.com</a>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center gap-4 p-3.5 rounded-2xl bg-white/5 border border-white/10">
+                                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+                                        <i class="fa-solid fa-location-dot"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-xs text-gray-400">Location</div>
+                                        <div class="text-sm font-semibold text-white">Kota Kinabalu, Sabah, Malaysia</div>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center gap-4 p-3.5 rounded-2xl bg-white/5 border border-white/10">
+                                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+                                        <i class="fa-solid fa-phone"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-xs text-gray-400">Phone / WhatsApp</div>
+                                        <div class="text-sm font-semibold text-white">+60 12-345 6789</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Social Links -->
+                            <div class="pt-4 border-t border-white/10 flex items-center gap-3">
+                                <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-300 hover:text-emerald-400 hover:bg-white/10 transition-all">
+                                    <i class="fa-brands fa-github"></i>
+                                </a>
+                                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-300 hover:text-emerald-400 hover:bg-white/10 transition-all">
+                                    <i class="fa-brands fa-linkedin-in"></i>
+                                </a>
+                                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-300 hover:text-emerald-400 hover:bg-white/10 transition-all">
+                                    <i class="fa-brands fa-twitter"></i>
+                                </a>
+                                <a href="https://discord.com" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-300 hover:text-emerald-400 hover:bg-white/10 transition-all">
+                                    <i class="fa-brands fa-discord"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Contact Form -->
+                    <div class="lg:col-span-7">
+                        <div class="glass-card rounded-3xl p-6 sm:p-8">
+                            <form id="contact-form" onsubmit="handleContactSubmit(event)" class="space-y-5">
+                                <div>
+                                    <label for="name" class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">Your Name</label>
+                                    <input type="text" id="name" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition-colors" placeholder="John Doe">
+                                </div>
+
+                                <div>
+                                    <label for="email" class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">Your Email</label>
+                                    <input type="email" id="email" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition-colors" placeholder="john@example.com">
+                                </div>
+
+                                <div>
+                                    <label for="subject" class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">Subject</label>
+                                    <input type="text" id="subject" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition-colors" placeholder="Project Inquiry / Collaboration">
+                                </div>
+
+                                <div>
+                                    <label for="message" class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">Message</label>
+                                    <textarea id="message" rows="4" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition-colors resize-none" placeholder="Tell me about your project or inquiry..."></textarea>
+                                </div>
+
+                                <button type="submit" id="submit-btn" class="w-full py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-darkBg font-semibold text-sm transition-all shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 hover:translate-y-[-1px]">
+                                    <span>Send Message</span>
+                                    <i class="fa-solid fa-paper-plane text-xs"></i>
+                                </button>
+                            </form>
+
+                            <!-- Success Feedback Box -->
+                            <div id="success-msg" class="hidden mt-4 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm text-center flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-circle-check text-base"></i>
+                                <span>Thank you! Your message has been sent successfully. I will get back to you soon.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-8 px-4 sm:px-6 lg:px-8 border-t border-emerald-500/15 text-center text-xs text-gray-500 bg-darkBg relative z-10">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+                &copy; 2026 Digital Resume Portfolio. All rights reserved.
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="#home" class="hover:text-emerald-400 transition-colors">Home</a>
+                <a href="#about" class="hover:text-emerald-400 transition-colors">About Me</a>
+                <a href="#projects" class="hover:text-emerald-400 transition-colors">My Projects</a>
+                <a href="#contact" class="hover:text-emerald-400 transition-colors">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Project Details Modal -->
+    <div id="project-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden">
+        <div class="glass-card rounded-3xl p-6 sm:p-8 max-w-lg w-full space-y-6 relative border border-emerald-500/30 shadow-2xl animate-scaleUp">
+            <button onclick="closeProjectModal()" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors cursor-pointer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="space-y-3">
+                <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-xl">
+                    <i class="fa-solid fa-laptop-code"></i>
+                </div>
+                <h3 id="modal-title" class="text-2xl font-bold text-white">Project Title</h3>
+            </div>
+
+            <p id="modal-desc" class="text-gray-300 text-sm leading-relaxed">
+                Project description goes here.
+            </p>
+
+            <div class="space-y-2">
+                <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Technologies & Skills:</div>
+                <div id="modal-tags" class="flex flex-wrap gap-1.5">
+                    <!-- Dynamic tags -->
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-white/10 flex justify-end">
+                <button onclick="closeProjectModal()" class="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-medium text-sm transition-colors cursor-pointer">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lightbox Modal for Image Gallery Preview -->
+    <div id="lightbox-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md hidden">
+        <div class="max-w-4xl w-full glass-card rounded-3xl p-4 sm:p-6 space-y-4 relative border border-emerald-500/30 shadow-2xl">
+            <button onclick="closeLightbox()" class="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-darkBg/85 hover:bg-emerald-500 hover:text-darkBg flex items-center justify-center text-white transition-all shadow-lg cursor-pointer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="overflow-hidden rounded-2xl max-h-[70vh] bg-slate-950 flex items-center justify-center">
+                <img id="lightbox-img" src="" alt="Enlarged Project Preview" class="w-full h-auto object-contain max-h-[65vh]">
+            </div>
+            <div class="space-y-1 px-2">
+                <h4 id="lightbox-title" class="text-lg font-bold text-white"></h4>
+                <p id="lightbox-desc" class="text-gray-400 text-xs sm:text-sm"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Matrix Code Rain Background Animation
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Characters for code rain (mix of binary, code symbols, hex)
+        const chars = '01ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz<>{}[]=+-*&|/\\#$_~;';
+        const fontSize = 14;
+        let columns = Math.floor(canvas.width / fontSize);
+        let drops = [];
+
+        for (let i = 0; i < columns; i++) {
+            drops[i] = Math.floor(Math.random() * -100);
+        }
+
+        function drawMatrix() {
+            // Translucent dark fill to create fade trail
+            ctx.fillStyle = 'rgba(11, 15, 14, 0.12)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#22c55e'; // Vibrant green matching matrix movie look
+            ctx.font = fontSize + 'px "Fira Code", monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars.charAt(Math.floor(Math.random() * chars.length));
+                const x = i * fontSize;
+                const y = drops[i] * fontSize;
+
+                // Randomly highlight leading character brighter
+                if (Math.random() > 0.85) {
+                    ctx.fillStyle = '#86efac';
+                } else {
+                    ctx.fillStyle = '#16a34a';
+                }
+
+                ctx.fillText(text, x, y);
+
+                if (y > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        setInterval(drawMatrix, 45);
+
+        // Mobile Menu Toggle
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuIcon = document.getElementById('menu-icon');
+
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            if (mobileMenu.classList.contains('hidden')) {
+                menuIcon.classList.remove('fa-xmark');
+                menuIcon.classList.add('fa-bars');
+            } else {
+                menuIcon.classList.remove('fa-bars');
+                menuIcon.classList.add('fa-xmark');
+            }
+        });
+
+        // Close mobile menu when clicking a link
+        document.querySelectorAll('.mobile-link').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+                menuIcon.classList.remove('fa-xmark');
+                menuIcon.classList.add('fa-bars');
+            });
+        });
+
+        // Scrollspy for navigation active state
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= (sectionTop - 150)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('bg-white/15', 'text-white');
+                link.classList.add('text-gray-300');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('bg-white/10', 'text-white');
+                    link.classList.remove('text-gray-300');
+                }
+            });
+        });
+
+        // Modal Functions
+        function openProjectModal(title, description, tags) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-desc').textContent = description;
+            const tagsContainer = document.getElementById('modal-tags');
+            tagsContainer.innerHTML = '';
+            tags.forEach(tag => {
+                const span = document.createElement('span');
+                span.className = 'px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs font-medium text-emerald-300';
+                span.textContent = tag;
+                tagsContainer.appendChild(span);
+            });
+            document.getElementById('project-modal').classList.remove('hidden');
+        }
+
+        function closeProjectModal() {
+            document.getElementById('project-modal').classList.add('hidden');
+        }
+
+        document.getElementById('project-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'project-modal') {
+                closeProjectModal();
+            }
+        });
+
+        // Lightbox Functions
+        function openLightbox(imgSrc, title, desc) {
+            document.getElementById('lightbox-img').src = imgSrc;
+            document.getElementById('lightbox-title').textContent = title;
+            document.getElementById('lightbox-desc').textContent = desc;
+            document.getElementById('lightbox-modal').classList.remove('hidden');
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox-modal').classList.add('hidden');
+        }
+
+        document.getElementById('lightbox-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'lightbox-modal') {
+                closeLightbox();
+            }
+        });
+
+        // Interactive Contact Form Handling
+        function handleContactSubmit(event) {
+            event.preventDefault();
+            const submitBtn = document.getElementById('submit-btn');
+            const successMsg = document.getElementById('success-msg');
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"><span>Sending...</span></i>';
+
+            setTimeout(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span>Send Message</span><i class="fa-solid fa-paper-plane text-xs"></i>';
+                document.getElementById('contact-form').reset();
+                successMsg.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    successMsg.classList.add('hidden');
+                }, 6000);
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
